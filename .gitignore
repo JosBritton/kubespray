@@ -1,10 +1,9 @@
 .vagrant
+.venv/
 *.retry
 **/vagrant_ansible_inventory
 *.iml
 temp
-contrib/offline/container-images
-contrib/offline/container-images.tar.gz
 contrib/offline/offline-files
 contrib/offline/offline-files.tar.gz
 .idea
@@ -28,6 +27,7 @@ plugins/mitogen
 inventory/*
 !inventory/local
 !inventory/sample
+!inventory/cluster
 inventory/*/artifacts/
 
 # Byte-compiled / optimized / DLL files
