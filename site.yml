@@ -1,0 +1,17 @@
+# vim: ft=yaml.ansible
+---
+- name: "Pre-installation"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Install local stub resolver (systemd-resolved)"
+      ansible.builtin.file:
+        src: "/run/systemd/resolve/stub-resolv.conf"
+        dest: "/etc/resolv.conf"
+        state: "link"
+        owner: "root"
+        group: "root"
+        force: true
+
+- name: Install Kubernetes
+  ansible.builtin.import_playbook: playbooks/cluster.yml
