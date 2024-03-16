@@ -1,7 +1,29 @@
+.SILENT:
+.DEFAULT_GOAL := all
+
+export ANSIBLE_HOST_KEY_CHECKING := "False"
+
+.PHONY: all
+all: .venv/lock
+	. .venv/bin/activate && \
+	ansible-playbook -i inventory/cluster/hosts.yml --become --become-user=root site.yml
+
+.venv/lock: requirements.txt
+	python3 -m venv .venv/
+
+	. .venv/bin/activate && \
+	python3 -m pip install -U -r requirements.txt
+
+	touch .venv/lock
+
+.PHONY: mitogen
 mitogen:
 	@echo Mitogen support is deprecated.
 	@echo Please run the following command manually:
 	@echo   ansible-playbook -c local mitogen.yml -vv
+
+.PHONY: clean
 clean:
+	rm -rf .venv/
 	rm -rf dist/
 	rm *.retry
