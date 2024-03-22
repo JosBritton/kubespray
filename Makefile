@@ -7,6 +7,7 @@ export ANSIBLE_HOST_KEY_CHECKING := "False"
 all: .venv/lock
 	. .venv/bin/activate && \
 	ansible-playbook -i inventory/cluster/hosts.yml --become --become-user=root site.yml
+	ln -sfT "$$(realpath inventory/cluster/artifacts/admin.conf)" "$(HOME)/.config/kube"
 
 .venv/lock: requirements.txt
 	python3 -m venv .venv/
@@ -24,6 +25,7 @@ mitogen:
 
 .PHONY: clean
 clean:
+	unlink "$(HOME)/.config/kube"
 	rm -rf .venv/
 	rm -rf dist/
 	rm *.retry
