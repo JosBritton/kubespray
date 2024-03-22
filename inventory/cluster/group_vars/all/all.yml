@@ -137,3 +137,7 @@ unsafe_show_logs: true
 
 ## If enabled it will allow kubespray to attempt setup even if the distribution is not supported. For unsupported distributions this can lead to unexpected failures in some cases.
 allow_unsupported_distribution_setup: false
+
+# The IP address and port for the metrics server to serve on
+# (set to 0.0.0.0 for all IPv4 interfaces and `::` for all IPv6 interfaces)
+kube_proxy_metrics_bind_address: 0.0.0.0:10249
