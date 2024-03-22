@@ -148,6 +148,20 @@ kube_proxy_nodeport_addresses: >-
 
 ## Encrypting Secret Data at Rest
 kube_encrypt_secret_data: true
+kube_encryption_resources: [secrets]
+kube_encryption_algorithm: "secretbox"
+
+authorization_modes: ["Node", "RBAC", "Webhook"]
+
+tls_min_version: VersionTLS12
+tls_cipher_suites:
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+
+# needed by kube-prometheus
+kubelet_authorization_mode_webhook: true
+kubelet_authentication_token_webhook: true
 
 # Graceful Node Shutdown (Kubernetes >= 1.21.0), see https://kubernetes.io/blog/2021/04/21/graceful-node-shutdown-beta/
 # kubelet_shutdown_grace_period had to be greater than kubelet_shutdown_grace_period_critical_pods to allow
