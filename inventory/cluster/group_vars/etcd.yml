@@ -12,7 +12,7 @@ etcd_metrics_service_labels:
   k8s-app: etcd
   app.kubernetes.io/managed-by: Kubespray
   app: kube-prometheus-stack-kube-etcd
-  release: prometheus-stack
+  release: prometheus-operator
 
 ## Etcd is restricted by default to 512M on systems under 4GB RAM, 512MB is not enough for much more than testing.
 ## Set this if your etcd nodes have less than 4GB but you want more RAM for etcd. Set to 0 for unrestricted RAM.
