@@ -1,0 +1,5 @@
+{% for address in dns_servers %}
+nameserver {{ address }}
+{% endfor %}
+options edns0 trust-ad
+search private.swifthomelab.net
