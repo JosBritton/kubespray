@@ -231,7 +231,7 @@ metallb_speaker_enabled: "{{ metallb_enabled }}"
 #           address_pool:
 #             - pool2
 
-argocd_enabled: true
+argocd_enabled: false
 argocd_version: v2.8.4
 argocd_namespace: argocd
 # Default password:
