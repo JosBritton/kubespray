@@ -151,7 +151,7 @@ kube_encrypt_secret_data: true
 kube_encryption_resources: [secrets]
 kube_encryption_algorithm: "secretbox"
 
-authorization_modes: ["Node", "RBAC", "Webhook"]
+authorization_modes: ["Node", "RBAC"]
 
 tls_min_version: VersionTLS12
 tls_cipher_suites:
