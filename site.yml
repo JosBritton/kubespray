@@ -1,7 +1,3 @@
-# vim: ft=yaml.ansible
 ---
-- name: "Pre-installation"
-  ansible.builtin.import_playbook: preinstall.yml
-
 - name: Install Kubernetes
   ansible.builtin.import_playbook: playbooks/cluster.yml
