@@ -25,7 +25,7 @@ mitogen:
 
 .PHONY: clean
 clean:
-	unlink "$(HOME)/.config/kube"
+	rm -f "$(HOME)/.config/kube"
 	rm -rf .venv/
 	rm -rf dist/
-	rm *.retry
+	rm -f *.retry
