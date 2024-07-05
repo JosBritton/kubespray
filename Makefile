@@ -9,6 +9,10 @@ all: .venv/lock
 	ansible-playbook -i inventory/cluster/hosts.yml --become --become-user=root site.yml
 	ln -sfT "$$(realpath inventory/cluster/artifacts/admin.conf)" "$(HOME)/.config/kube"
 
+.PHONY: install
+install: .venv/lock
+	ln -sfT "$$(realpath inventory/cluster/artifacts/admin.conf)" "$(HOME)/.config/kube"
+
 .venv/lock: requirements.txt
 	python3 -m venv .venv/
 
