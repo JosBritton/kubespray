@@ -6,7 +6,7 @@ export ANSIBLE_HOST_KEY_CHECKING := "False"
 .PHONY: all
 all: .venv/lock
 	. .venv/bin/activate && \
-	ansible-playbook -i inventory/cluster/hosts.yml --become --become-user=root site.yml
+	ansible-playbook -i inventory/cluster/hosts.yml --become --become-user=root cluster.yml
 	ln -sfT "$$(realpath inventory/cluster/artifacts/admin.conf)" "$(HOME)/.config/kube"
 
 .PHONY: install
