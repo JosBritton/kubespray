@@ -30,11 +30,11 @@
           Pin-Priority: 1001
         dest: "/etc/apt/preferences.d/libseccomp2"
         owner: "root"
-        mode: 0644
+        mode: "0644"
 
 - name: Update package management cache (APT)
   apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
   tags:

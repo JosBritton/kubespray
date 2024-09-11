@@ -1,8 +1,8 @@
 ---
-# If all masters have node role, there are no tainted master and toleration should not be specified.
-- name: Check all masters are node or not
+# If all control plane nodes have the node role, there are no tainted control plane nodes and toleration should not be specified.
+- name: Check all control plane nodes are node or not
   set_fact:
-    masters_are_not_tainted: "{{ groups['kube_node'] | intersect(groups['kube_control_plane']) == groups['kube_control_plane'] }}"
+    control_plane_nodes_are_not_tainted: "{{ groups['kube_node'] | intersect(groups['kube_control_plane']) == groups['kube_control_plane'] }}"
 
 - name: Metrics Server | Delete addon dir
   file:
@@ -19,7 +19,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when:
     - inventory_hostname == groups['kube_control_plane'][0]
 
@@ -39,7 +39,7 @@
   template:
     src: "{{ item.file }}.j2"
     dest: "{{ kube_config_dir }}/addons/metrics_server/{{ item.file }}"
-    mode: 0644
+    mode: "0644"
   with_items: "{{ metrics_server_templates }}"
   register: metrics_server_manifests
   when:
