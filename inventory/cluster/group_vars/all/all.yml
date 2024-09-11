@@ -13,7 +13,7 @@ bin_dir: /usr/local/bin
 ## External LB example config
 apiserver_loadbalancer_domain_name: "lb.private.swifthomelab.net"
 loadbalancer_apiserver:
-  address: "10.0.3.20"
+  address: "10.0.8.29"
   port: 6443  # 6443 -> 6443
 
 ## Internal loadbalancers for apiservers
