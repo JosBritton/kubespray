@@ -15,6 +15,15 @@ else
   fi
 fi
 
+# Check out latest tag if testing upgrade
+if [ "${UPGRADE_TEST}" != "false" ]; then
+  git fetch --all && git checkout "$KUBESPRAY_VERSION"
+  # Checkout the CI vars file so it is available
+  git checkout "${CI_COMMIT_SHA}" tests/files/${CI_JOB_NAME}.yml
+  git checkout "${CI_COMMIT_SHA}" ${CI_TEST_REGISTRY_MIRROR}
+  git checkout "${CI_COMMIT_SHA}" ${CI_TEST_SETTING}
+fi
+
 # needed for ara not to complain
 export TZ=UTC
 
@@ -41,20 +50,11 @@ if [[ "$CI_JOB_NAME" =~ "opensuse" ]]; then
   ansible all -m raw -a 'zypper --gpg-auto-import-keys refresh'
 fi
 
-# Check out latest tag if testing upgrade
-if [ "${UPGRADE_TEST}" != "false" ]; then
-  git fetch --all && git checkout "$KUBESPRAY_VERSION"
-  # Checkout the CI vars file so it is available
-  git checkout "${CI_COMMIT_SHA}" tests/files/${CI_JOB_NAME}.yml
-  git checkout "${CI_COMMIT_SHA}" ${CI_TEST_REGISTRY_MIRROR}
-  git checkout "${CI_COMMIT_SHA}" ${CI_TEST_SETTING}
-fi
-
 run_playbook () {
 playbook=$1
 shift
 # We can set --limit here and still pass it as supplemental args because `--limit`  is a 'last one wins' option
-ansible-playbook --limit "all:!fake_hosts" \
+ansible-playbook \
      $ANSIBLE_LOG_LEVEL \
     -e @${CI_TEST_SETTING} \
     -e @${CI_TEST_REGISTRY_MIRROR} \
@@ -85,8 +85,8 @@ fi
 
 # Test control plane recovery
 if [ "${RECOVER_CONTROL_PLANE_TEST}" != "false" ]; then
-    run_playbook reset.yml --limit "${RECOVER_CONTROL_PLANE_TEST_GROUPS}:!fake_hosts" -e reset_confirmation=yes
-    run_playbook recover-control-plane.yml -e etcd_retries=10 --limit "etcd:kube_control_plane:!fake_hosts"
+    run_playbook reset.yml --limit "${RECOVER_CONTROL_PLANE_TEST_GROUPS}" -e reset_confirmation=yes
+    run_playbook recover-control-plane.yml -e etcd_retries=10 --limit "etcd:kube_control_plane"
 fi
 
 # Test collection build and install by installing our collection, emptying our repository, adding

@@ -122,15 +122,6 @@
     - item in kube_apiserver_admission_plugins_needs_configuration
   loop: "{{ kube_apiserver_enable_admission_plugins }}"
 
-- name: Kubeadm | Configure default cluster podnodeslector
-  template:
-    src: "podnodeselector.yaml.j2"
-    dest: "{{ kube_config_dir }}/admission-controls/podnodeselector.yaml"
-    mode: "0640"
-  when:
-    - kube_apiserver_admission_plugins_podnodeselector_default_node_selector is defined
-    - kube_apiserver_admission_plugins_podnodeselector_default_node_selector | length > 0
-
 - name: Kubeadm | Check apiserver.crt SANs
   vars:
     apiserver_ips: "{{ apiserver_sans | map('ansible.utils.ipaddr') | reject('equalto', False) | list }}"
@@ -175,21 +166,6 @@
     - kubeadm_already_run.stat.exists
     - apiserver_sans_ip_check.changed or apiserver_sans_host_check.changed
     - not kube_external_ca_mode
-
-- name: Kubeadm | Create directory to store kubeadm patches
-  file:
-    path: "{{ kubeadm_patches.dest_dir }}"
-    state: directory
-    mode: "0640"
-  when: kubeadm_patches is defined and kubeadm_patches.enabled
-
-- name: Kubeadm | Copy kubeadm patches from inventory files
-  copy:
-    src: "{{ kubeadm_patches.source_dir }}/"
-    dest: "{{ kubeadm_patches.dest_dir }}"
-    owner: "root"
-    mode: "0644"
-  when: kubeadm_patches is defined and kubeadm_patches.enabled
 
 - name: Kubeadm | Initialize first control plane node
   command: >-
@@ -267,5 +243,5 @@
   delegate_to: "{{ first_kube_control_plane }}"
   with_items:
     - "node-role.kubernetes.io/control-plane:NoSchedule-"
-  when: inventory_hostname in groups['kube_node']
+  when: ('kube_node' in group_names)
   failed_when: false

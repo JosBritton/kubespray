@@ -296,8 +296,8 @@ node_taints:
 
 For all kube components, custom flags can be passed in. This allows for edge cases where users need changes to the default deployment that may not be applicable to all deployments.
 
-Extra flags for the kubelet can be specified using these variables,
-in the form of dicts of key-value pairs of configuration parameters that will be inserted into the kubelet YAML config file. The `kubelet_node_config_extra_args` apply kubelet settings only to nodes and not control planes. Example:
+Extra flags for the kubelet can be specified using these variables, in the form of dicts of key-value pairs of
+configuration parameters that will be inserted into the kubelet YAML config file. Example:
 
 ```yml
 kubelet_config_extra_args:
@@ -312,14 +312,10 @@ kubelet_config_extra_args:
 The possible vars are:
 
 * *kubelet_config_extra_args*
-* *kubelet_node_config_extra_args*
 
 Previously, the same parameters could be passed as flags to kubelet binary with the following vars:
 
 * *kubelet_custom_flags*
-* *kubelet_node_custom_flags*
-
-The `kubelet_node_custom_flags` apply kubelet settings only to nodes and not control planes. Example:
 
 ```yml
 kubelet_custom_flags:
@@ -336,6 +332,13 @@ in the form of dicts of key-value pairs of configuration parameters that will be
 * *kube_kubeadm_apiserver_extra_args*
 * *kube_kubeadm_controller_extra_args*
 * *kube_kubeadm_scheduler_extra_args*
+
+### Kubeadm patches
+
+When extra flags are not sufficient and there is a need to further customize kubernetes components,
+[kubeadm patches](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches)
+can be used.
+You should use the [`kubeadm_patches` variable](../../roles/kubernetes/kubeadm_common/defaults/main.yml) for that purpose.
 
 ## App variables
 

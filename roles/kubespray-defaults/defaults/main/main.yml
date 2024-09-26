@@ -18,7 +18,7 @@ kubelet_fail_swap_on: true
 kubelet_swap_behavior: LimitedSwap
 
 ## Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.30.4
+kube_version: v1.31.1
 
 ## The minimum version working
 kube_version_min_required: v1.28.0
@@ -28,6 +28,9 @@ kube_proxy_mode: ipvs
 
 ## The timeout for init first control-plane
 kubeadm_init_timeout: 300s
+
+# TODO: remove this
+kube_reserved_cgroups_for_service_slice: kube.slice
 
 ## List of kubeadm init phases that should be skipped during control plane setup
 ## By default 'addon/coredns' is skipped
@@ -273,7 +276,7 @@ kubelet_shutdown_grace_period: 60s
 kubelet_shutdown_grace_period_critical_pods: 20s
 
 # Whether to deploy the container engine
-deploy_container_engine: "{{ inventory_hostname in groups['k8s_cluster'] or etcd_deployment_type == 'docker' }}"
+deploy_container_engine: "{{ 'k8s_cluster' in group_names or etcd_deployment_type == 'docker' }}"
 
 # Container for runtime
 container_manager: containerd
