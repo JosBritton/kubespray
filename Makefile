@@ -4,9 +4,18 @@
 export ANSIBLE_HOST_KEY_CHECKING := "False"
 
 .PHONY: all
-all: .venv/lock
+all: cluster
+
+.PHONY: cluster
+cluster: .venv/lock
 	. .venv/bin/activate && \
 	ansible-playbook -i inventory/cluster/hosts.yml --become --become-user=root cluster.yml
+	ln -sfT "$$(realpath inventory/cluster/artifacts/admin.conf)" "$(HOME)/.config/kube"
+
+.PHONY: upgrade-cluster
+upgrade-cluster: .venv/lock
+	. .venv/bin/activate && \
+	ansible-playbook -i inventory/cluster/hosts.yml --become --become-user=root upgrade-cluster.yml
 	ln -sfT "$$(realpath inventory/cluster/artifacts/admin.conf)" "$(HOME)/.config/kube"
 
 .PHONY: install
