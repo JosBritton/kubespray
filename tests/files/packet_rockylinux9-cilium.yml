@@ -1,7 +1,6 @@
 ---
 # Instance settings
 cloud_image: rockylinux-9
-mode: default
 vm_memory: 3072
 
 # Kubespray settings
@@ -11,3 +10,4 @@ cilium_kube_proxy_replacement: strict
 
 # Node Feature Discovery
 node_feature_discovery_enabled: true
+kube_asymmetric_encryption_algorithm: "ECDSA-P256"

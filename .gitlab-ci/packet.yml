@@ -65,14 +65,6 @@
   allow_failure: true
   extends: .packet
 
-packet_cleanup_old:
-  stage: deploy-part1
-  extends: .packet_periodic
-  script:
-    - cd tests
-    - make cleanup-packet
-  after_script: []
-
 # The ubuntu20-calico-all-in-one jobs are meant as early stages to prevent running the full CI if something is horribly broken
 packet_ubuntu20-calico-all-in-one:
   stage: deploy-part1
@@ -96,19 +88,22 @@ packet_ubuntu22-calico-all-in-one-upgrade:
 packet_ubuntu24-calico-etcd-datastore:
   extends: .packet_pr
 
-packet_almalinux8-crio:
+packet_almalinux9-crio:
   extends: .packet_pr
 
-packet_almalinux8-kube-ovn:
+packet_almalinux9-kube-ovn:
   extends: .packet_pr
 
-packet_debian11-calico:
+packet_debian11-calico-collection:
   extends: .packet_pr
 
 packet_debian11-macvlan:
   extends: .packet_pr
 
 packet_debian12-cilium:
+  extends: .packet_pr
+
+packet_almalinux8-calico:
   extends: .packet_pr
 
 packet_rockylinux8-calico:
@@ -119,13 +114,24 @@ packet_rockylinux9-cilium:
   variables:
     RESET_CHECK: "true"
 
+# Need an update of the container image to use schema v2
+# update: quay.io/kubespray/vm-amazon-linux-2:latest
 packet_amazon-linux-2-all-in-one:
-  extends: .packet_pr
+  extends: .packet_pr_manual
+  rules:
+    - when: manual
+      allow_failure: true
 
-packet_opensuse-docker-cilium:
+packet_opensuse15-6-calico:
   extends: .packet_pr
 
 packet_ubuntu20-cilium-sep:
+  extends: .packet_pr
+
+packet_openeuler24-calico:
+  extends: .packet_pr
+
+packet_ubuntu20-calico-all-in-one-hardening:
   extends: .packet_pr
 
 ## Extended
@@ -138,7 +144,7 @@ packet_debian12-docker:
 packet_debian12-calico:
   extends: .packet_pr_extended
 
-packet_almalinux8-calico-remove-node:
+packet_almalinux9-calico-remove-node:
   extends: .packet_pr_extended
   variables:
     REMOVE_NODE_CHECK: "true"
@@ -147,13 +153,13 @@ packet_almalinux8-calico-remove-node:
 packet_rockylinux9-calico:
   extends: .packet_pr_extended
 
-packet_almalinux8-calico:
+packet_almalinux9-calico:
   extends: .packet_pr_extended
 
-packet_almalinux8-docker:
+packet_almalinux9-docker:
   extends: .packet_pr_extended
 
-packet_ubuntu20-calico-all-in-one-hardening:
+packet_opensuse15-6-docker-cilium:
   extends: .packet_pr_extended
 
 packet_ubuntu24-calico-all-in-one:
@@ -169,7 +175,7 @@ packet_ubuntu22-all-in-one-docker:
   extends: .packet_pr_extended
 
 # ### MANUAL JOBS
-packet_fedora37-crio:
+packet_fedora39-crio:
   extends: .packet_pr_manual
 
 packet_ubuntu20-flannel-ha:
@@ -181,13 +187,13 @@ packet_ubuntu20-all-in-one-docker:
 packet_ubuntu20-flannel-ha-once:
   extends: .packet_pr_manual
 
-packet_fedora37-calico-swap-selinux:
+packet_fedora39-calico-swap-selinux:
   extends: .packet_pr_manual
 
-packet_almalinux8-calico-ha-ebpf:
+packet_almalinux9-calico-ha-ebpf:
   extends: .packet_pr_manual
 
-packet_almalinux8-calico-nodelocaldns-secondary:
+packet_almalinux9-calico-nodelocaldns-secondary:
   extends: .packet_pr_manual
 
 packet_debian11-custom-cni:
@@ -203,16 +209,15 @@ packet_ubuntu20-calico-ha-wireguard:
   extends: .packet_pr_manual
 
 # PERIODIC
-packet_fedora38-docker-calico:
+packet_fedora40-docker-calico:
   stage: deploy-extended
   extends: .packet_periodic
   variables:
     RESET_CHECK: "true"
 
-packet_fedora37-calico-selinux:
+packet_fedora39-calico-selinux:
   stage: deploy-extended
   extends: .packet_periodic
-
 
 packet_ubuntu20-calico-etcd-kubeadm-upgrade-ha:
   stage: deploy-extended

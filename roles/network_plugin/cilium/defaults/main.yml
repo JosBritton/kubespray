@@ -4,14 +4,14 @@ cilium_min_version_required: "1.10"
 cilium_debug: false
 
 cilium_mtu: ""
-cilium_enable_ipv4: true
-cilium_enable_ipv6: false
+cilium_enable_ipv4: "{{ ipv4_stack }}"
+cilium_enable_ipv6: "{{ ipv6_stack }}"
 
 # Enable l2 announcement from cilium to replace Metallb Ref: https://docs.cilium.io/en/v1.14/network/l2-announcements/
 cilium_l2announcements: false
 
 # Cilium agent health port
-cilium_agent_health_port: "{%- if cilium_version | regex_replace('v') is version('1.11.6', '>=') -%}9879{%- else -%}9876{%- endif -%}"
+cilium_agent_health_port: "{%- if cilium_version is version('1.11.6', '>=') -%}9879{%- else -%}9876{%- endif -%}"
 
 # Identity allocation mode selects how identities are shared between cilium
 # nodes by setting how they are stored. The options are "crd" or "kvstore".
@@ -45,6 +45,9 @@ cilium_tunnel_mode: vxlan
 
 # LoadBalancer Mode (snat/dsr/hybrid) Ref: https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#dsr-mode
 cilium_loadbalancer_mode: snat
+
+# -- Configure Loadbalancer IP Pools
+cilium_loadbalancer_ip_pools: []
 
 # Optional features
 cilium_enable_prometheus: false
@@ -144,6 +147,8 @@ cilium_ip_masq_resync_interval: 60s
 # Hubble
 ### Enable Hubble without install
 cilium_enable_hubble: false
+### Enable Hubble-ui
+cilium_enable_hubble_ui: "{{ cilium_enable_hubble }}"
 ### Enable Hubble Metrics
 cilium_enable_hubble_metrics: false
 ### if cilium_enable_hubble_metrics: true
@@ -275,6 +280,25 @@ cilium_monitor_aggregation_flags: "all"
 
 cilium_enable_bpf_clock_probe: true
 
+# -- Enable BGP Control Plane
+cilium_enable_bgp_control_plane: false
+
+
+# -- Configure BGP Instances (New bgpv2 API v1.16+)
+cilium_bgp_cluster_configs: []
+
+# -- Configure BGP Peers (New bgpv2 API v1.16+)
+cilium_bgp_peer_configs: []
+
+# -- Configure BGP Advertisements (New bgpv2 API v1.16+)
+cilium_bgp_advertisements: []
+
+# -- Configure BGP Node Config Overrides (New bgpv2 API v1.16+)
+cilium_bgp_node_config_overrides: []
+
+# -- Configure BGP Peers (Legacy < v1.16)
+cilium_bgp_peering_policies: []
+
 # -- Whether to enable CNP status updates.
 cilium_disable_cnp_status_updates: true
 
@@ -283,9 +307,9 @@ cilium_rolling_restart_wait_retries_count: 30
 cilium_rolling_restart_wait_retries_delay_seconds: 10
 
 # Cilium changed the default metrics exporter ports in 1.12
-cilium_agent_scrape_port: "{{ cilium_version | regex_replace('v') is version('1.12', '>=') | ternary('9962', '9090') }}"
-cilium_operator_scrape_port: "{{ cilium_version | regex_replace('v') is version('1.12', '>=') | ternary('9963', '6942') }}"
-cilium_hubble_scrape_port: "{{ cilium_version | regex_replace('v') is version('1.12', '>=') | ternary('9965', '9091') }}"
+cilium_agent_scrape_port: "{{ cilium_version is version('1.12', '>=') | ternary('9962', '9090') }}"
+cilium_operator_scrape_port: "{{ cilium_version is version('1.12', '>=') | ternary('9963', '6942') }}"
+cilium_hubble_scrape_port: "{{ cilium_version is version('1.12', '>=') | ternary('9965', '9091') }}"
 
 # Cilium certgen args for generate certificate for hubble mTLS
 cilium_certgen_args:
@@ -322,3 +346,5 @@ cilium_certgen_args:
 #       resourceNames:
 #       - toto
 cilium_clusterrole_rules_operator_extra_vars: []
+cilium_enable_host_firewall: false
+cilium_policy_audit_mode: false

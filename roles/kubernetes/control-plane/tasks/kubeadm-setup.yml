@@ -35,12 +35,13 @@
       - "{{ kube_apiserver_ip }}"
       - "localhost"
       - "127.0.0.1"
+      - "::1"
     sans_lb: "{{ [apiserver_loadbalancer_domain_name] if apiserver_loadbalancer_domain_name is defined else [] }}"
     sans_lb_ip: "{{ [loadbalancer_apiserver.address] if loadbalancer_apiserver is defined and loadbalancer_apiserver.address is defined else [] }}"
     sans_supp: "{{ supplementary_addresses_in_ssl_keys if supplementary_addresses_in_ssl_keys is defined else [] }}"
-    sans_access_ip: "{{ groups['kube_control_plane'] | map('extract', hostvars, 'access_ip') | list | select('defined') | list }}"
-    sans_ip: "{{ groups['kube_control_plane'] | map('extract', hostvars, 'ip') | list | select('defined') | list }}"
-    sans_address: "{{ groups['kube_control_plane'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | select('defined') | list }}"
+    sans_access_ip: "{{ groups['kube_control_plane'] | map('extract', hostvars, 'main_access_ip') | list | select('defined') | list }}"
+    sans_ip: "{{ groups['kube_control_plane'] | map('extract', hostvars, 'main_ip') | list | select('defined') | list }}"
+    sans_address: "{{ groups['kube_control_plane'] | map('extract', hostvars, ['ansible_default_ipv6', 'ansible_default_ipv4', 'address']) | list | select('defined') | list }}"
     sans_override: "{{ [kube_override_hostname] if kube_override_hostname else [] }}"
     sans_hostname: "{{ groups['kube_control_plane'] | map('extract', hostvars, ['ansible_hostname']) | list | select('defined') | list }}"
     sans_fqdn: "{{ groups['kube_control_plane'] | map('extract', hostvars, ['ansible_fqdn']) | list | select('defined') | list }}"
@@ -88,15 +89,12 @@
     kubeadm_config_api_fqdn: "{{ apiserver_loadbalancer_domain_name | default('lb-apiserver.kubernetes.local') }}"
   when: loadbalancer_apiserver is defined
 
-- name: Set kubeadm api version to v1beta3
-  set_fact:
-    kubeadmConfig_api_version: v1beta3
-
 - name: Kubeadm | Create kubeadm config
   template:
-    src: "kubeadm-config.{{ kubeadmConfig_api_version }}.yaml.j2"
+    src: "kubeadm-config.{{ kubeadm_config_api_version }}.yaml.j2"
     dest: "{{ kube_config_dir }}/kubeadm-config.yaml"
     mode: "0640"
+    validate: "{{ kubeadm_config_validate_enabled | ternary(bin_dir + '/kubeadm config validate --config %s', omit) }}"
 
 - name: Kubeadm | Create directory to store admission control configurations
   file:
@@ -172,7 +170,7 @@
     timeout -k {{ kubeadm_init_timeout }} {{ kubeadm_init_timeout }}
     {{ bin_dir }}/kubeadm init
     --config={{ kube_config_dir }}/kubeadm-config.yaml
-    --ignore-preflight-errors=all
+    --ignore-preflight-errors={{ kubeadm_ignore_preflight_errors | join(',') }}
     --skip-phases={{ kubeadm_init_phases_skip | join(',') }}
     {{ kube_external_ca_mode | ternary('', '--upload-certs') }}
   register: kubeadm_init
@@ -231,7 +229,7 @@
 - name: Kubeadm | Join other control plane nodes
   include_tasks: kubeadm-secondary.yml
 
-- name: Kubeadm | upgrade kubernetes cluster
+- name: Kubeadm | upgrade kubernetes cluster to {{ kube_version }}
   include_tasks: kubeadm-upgrade.yml
   when:
     - upgrade_cluster_setup
